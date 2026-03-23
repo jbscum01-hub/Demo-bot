@@ -11,7 +11,11 @@ function buildDemoPanelPayload() {
     new ButtonBuilder()
       .setCustomId(CUSTOM_IDS.OPEN_WHITELIST_MODAL)
       .setLabel('📋 Whitelist Flow')
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId(CUSTOM_IDS.OPEN_SUPPORT_MODAL)
+      .setLabel('🎫 Support Flow')
+      .setStyle(ButtonStyle.Success)
   );
 
   return {

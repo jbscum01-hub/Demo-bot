@@ -10,7 +10,7 @@ for (const key of requiredKeys) {
 }
 
 function splitModules(input) {
-  return String(input || 'donate,whitelist')
+  return String(input || 'donate,whitelist,support')
     .split(',')
     .map((item) => item.trim().toLowerCase())
     .filter(Boolean);
@@ -22,6 +22,7 @@ module.exports = {
   DATABASE_URL: process.env.DATABASE_URL,
   DONATE_REVIEW_CHANNEL_ID: process.env.DONATE_REVIEW_CHANNEL_ID || '',
   WHITELIST_REVIEW_CHANNEL_ID: process.env.WHITELIST_REVIEW_CHANNEL_ID || '',
+  SUPPORT_REVIEW_CHANNEL_ID: process.env.SUPPORT_REVIEW_CHANNEL_ID || '',
   AUDIT_LOG_CHANNEL_ID: process.env.AUDIT_LOG_CHANNEL_ID || '',
   DEMO_PANEL_CHANNEL_ID: process.env.DEMO_PANEL_CHANNEL_ID || '',
   DEFAULT_LANGUAGE: process.env.DEFAULT_LANGUAGE || 'th',

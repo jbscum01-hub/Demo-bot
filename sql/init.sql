@@ -105,3 +105,31 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_guild_id
 
 CREATE INDEX IF NOT EXISTS idx_audit_logs_action_type
   ON audit_logs(action_type);
+
+
+CREATE TABLE IF NOT EXISTS demo_support_requests (
+  id BIGSERIAL PRIMARY KEY,
+  request_code TEXT NOT NULL UNIQUE,
+  guild_id TEXT NOT NULL,
+  channel_id TEXT,
+  message_id TEXT,
+  user_id TEXT NOT NULL,
+  username TEXT NOT NULL,
+  discord_tag TEXT,
+  player_name TEXT NOT NULL,
+  topic TEXT NOT NULL,
+  detail_text TEXT,
+  contact_text TEXT,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  reviewer_id TEXT,
+  reviewer_name TEXT,
+  review_note TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_demo_support_requests_status
+  ON demo_support_requests(status);
+
+CREATE INDEX IF NOT EXISTS idx_demo_support_requests_user_id
+  ON demo_support_requests(user_id);

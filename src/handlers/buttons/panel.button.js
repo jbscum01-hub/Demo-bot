@@ -104,4 +104,47 @@ async function handleOpenWhitelistModal(interaction) {
   await interaction.showModal(modal);
 }
 
-module.exports = { handleOpenDonateModal, handleOpenWhitelistModal };
+async function handleOpenSupportModal(interaction) {
+  const modal = new ModalBuilder()
+    .setCustomId(CUSTOM_IDS.SUPPORT_MODAL)
+    .setTitle('เปิดเรื่อง Support (Demo)');
+
+  const playerName = new TextInputBuilder()
+    .setCustomId('player_name')
+    .setLabel('ชื่อตัวละคร / ชื่อในเกม')
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true)
+    .setMaxLength(100);
+
+  const topic = new TextInputBuilder()
+    .setCustomId('topic')
+    .setLabel('หัวข้อปัญหา')
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true)
+    .setMaxLength(100);
+
+  const detail = new TextInputBuilder()
+    .setCustomId('detail')
+    .setLabel('รายละเอียดปัญหา')
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true)
+    .setMaxLength(1000);
+
+  const contact = new TextInputBuilder()
+    .setCustomId('contact')
+    .setLabel('ช่องทางติดต่อกลับ / หมายเหตุ')
+    .setStyle(TextInputStyle.Short)
+    .setRequired(false)
+    .setMaxLength(150);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(playerName),
+    new ActionRowBuilder().addComponents(topic),
+    new ActionRowBuilder().addComponents(detail),
+    new ActionRowBuilder().addComponents(contact)
+  );
+
+  await interaction.showModal(modal);
+}
+
+module.exports = { handleOpenDonateModal, handleOpenWhitelistModal, handleOpenSupportModal };

@@ -1,47 +1,48 @@
 const env = require('../config/env');
 const { pool } = require('../db/pool');
+const { query } = require('../db/query');
 
-const requiredTables = [
-  'schema_migrations',
-  'tenants',
-  'tenant_config',
-  'tenant_modules',
-  'demo_donate_requests',
-  'demo_whitelist_requests',
-  'audit_logs'
-];
+async function main() {
+  console.log('[DOCTOR] Running checks...');
 
-(async () => {
-  try {
-    console.log('[OK] ENV loaded');
-    console.log(`[OK] DEFAULT_LANGUAGE = ${env.DEFAULT_LANGUAGE}`);
-    console.log(`[OK] DEFAULT_TIMEZONE = ${env.DEFAULT_TIMEZONE}`);
-    console.log(`[OK] DEFAULT_ENABLED_MODULES = ${env.DEFAULT_ENABLED_MODULES.join(', ')}`);
+  await pool.query('SELECT 1');
+  console.log('[OK] Database connected');
 
-    await pool.query('SELECT 1');
-    console.log('[OK] Database connected');
+  const tables = [
+    'tenants',
+    'tenant_config',
+    'tenant_modules',
+    'demo_donate_requests',
+    'demo_whitelist_requests',
+    'demo_support_requests',
+    'audit_logs'
+  ];
 
-    const tables = await pool.query(
-      `SELECT table_name
-       FROM information_schema.tables
-       WHERE table_schema = 'public'
-         AND table_name = ANY($1)
-       ORDER BY table_name`,
-      [requiredTables]
+  for (const table of tables) {
+    const result = await query(
+      `SELECT EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = $1
+      ) AS exists`,
+      [table]
     );
 
-    const found = tables.rows.map((r) => r.table_name);
-    for (const tableName of requiredTables) {
-      if (found.includes(tableName)) {
-        console.log(`[OK] Table exists: ${tableName}`);
-      } else {
-        console.log(`[FAIL] Missing table: ${tableName}`);
-      }
+    if (!result.rows[0]?.exists) {
+      throw new Error(`[TABLE_MISSING] ${table}`);
     }
-
-    process.exit(0);
-  } catch (error) {
-    console.error('[FAIL]', error.message);
-    process.exit(1);
   }
-})();
+
+  console.log('[OK] Tables ready');
+  console.log(`[OK] Default modules: ${env.DEFAULT_ENABLED_MODULES.join(', ')}`);
+  console.log(`[INFO] Default donate review channel: ${env.DONATE_REVIEW_CHANNEL_ID || '-'}`);
+  console.log(`[INFO] Default whitelist review channel: ${env.WHITELIST_REVIEW_CHANNEL_ID || '-'}`);
+  console.log(`[INFO] Default support review channel: ${env.SUPPORT_REVIEW_CHANNEL_ID || '-'}`);
+  console.log(`[INFO] Default audit log channel: ${env.AUDIT_LOG_CHANNEL_ID || '-'}`);
+  console.log('[DOCTOR] All checks passed');
+}
+
+main().catch((error) => {
+  console.error('[DOCTOR] Failed:', error.message);
+  process.exit(1);
+});

@@ -36,4 +36,22 @@ async function ensureWhitelistFlowReady(guildId) {
   return config;
 }
 
-module.exports = { ensureDonateFlowReady, ensureWhitelistFlowReady };
+async function ensureSupportFlowReady(guildId) {
+  const enabled = await isModuleEnabled(guildId, 'support');
+  if (!enabled) {
+    throw new Error('[MODULE_DISABLED] Support module is disabled for this guild');
+  }
+
+  const config = await getTenantConfigMap(guildId);
+  const missing = [];
+  if (!config.SUPPORT_REVIEW_CHANNEL_ID) missing.push('SUPPORT_REVIEW_CHANNEL_ID');
+  if (!config.AUDIT_LOG_CHANNEL_ID) missing.push('AUDIT_LOG_CHANNEL_ID');
+
+  if (missing.length) {
+    throw new Error(`[TENANT_CONFIG_MISSING] Missing config: ${missing.join(', ')}`);
+  }
+
+  return config;
+}
+
+module.exports = { ensureDonateFlowReady, ensureWhitelistFlowReady, ensureSupportFlowReady };
