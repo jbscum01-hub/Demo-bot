@@ -1,12 +1,12 @@
 {
   "name": "admin-workflow-demo-bot",
-  "version": "1.0.0",
-  "description": "Discord demo bot with core interaction routing + donate review flow + PostgreSQL",
+  "version": "1.1.0",
+  "description": "Discord demo bot with auto bootstrap, tenant setup, donate review flow and PostgreSQL",
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "start": "node scripts/bootstrap.js",
+    "dev": "nodemon scripts/bootstrap.js",
     "db:init": "node src/scripts/dbInit.js",
     "doctor": "node src/scripts/doctor.js"
   },

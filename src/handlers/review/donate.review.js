@@ -3,6 +3,7 @@ const { CUSTOM_IDS } = require('../../core/customIds');
 const { buildReviewedDonateEmbed } = require('../../core/embeds');
 const { reviewDonateRequest } = require('../../services/donate.service');
 const { writeAuditLog, sendAuditLogToDiscord } = require('../../services/audit.service');
+const { ensureDonateFlowReady } = require('../../services/feature-guard.service');
 
 function disableButtons(requestCode) {
   return new ActionRowBuilder().addComponents(
@@ -20,6 +21,8 @@ function disableButtons(requestCode) {
 }
 
 async function handleDonateReview(interaction, status, requestCode) {
+  await ensureDonateFlowReady(interaction.guildId);
+
   const updated = await reviewDonateRequest({
     requestCode,
     status,
@@ -54,9 +57,9 @@ async function handleDonateReview(interaction, status, requestCode) {
     }
   });
 
-  await sendAuditLogToDiscord(interaction.client, [
+  await sendAuditLogToDiscord(interaction.client, interaction.guildId, [
     `${status === 'APPROVED' ? '✅' : '❌'} **DONATE_${status}**`,
-    `Request: \\`${requestCode}\\``,
+    `Request: \`${requestCode}\``,
     `Reviewer: <@${interaction.user.id}>`,
     `Player: ${updated.player_name}`
   ]);

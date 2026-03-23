@@ -1,29 +1,39 @@
 # Admin Workflow Demo Bot
 
-บอทตัวอย่างสำหรับโชว์ลูกค้าว่าเราทำระบบ workflow + DB + review flow ได้จริง
+บอทเดโมสำหรับโชว์ลูกค้าว่าเราทำระบบ workflow + DB + auto setup ได้จริง โดยเวอร์ชันนี้โฟกัส Donate Review Flow และรองรับการ bootstrap อัตโนมัติบน Railway
 
 ## สิ่งที่มีในชุดนี้
-- Core interaction routing
+- Auto bootstrap ตอน `npm start`
+- สร้างตาราง DB เอง
+- Healthcheck เอง
+- Auto register guild เป็น tenant
+- Seed module / config เริ่มต้นให้เอง
 - Demo panel
 - Donate flow
-- PostgreSQL integration
 - Approve / Reject review flow
 - Audit log ลง DB + ส่งเข้า Discord channel
 
-## วิธีใช้งาน
+## ใช้งานแบบเร็วสุด
 1. คัดลอก `.env.example` เป็น `.env`
-2. กรอกค่าต่าง ๆ ให้ครบ
-3. ติดตั้ง package
-4. รันสร้างตาราง
-5. เปิดบอท
-6. พิมพ์ `!demo-panel` ในห้องที่ต้องการให้บอทส่ง panel
+2. ใส่ `DISCORD_TOKEN` และ `DATABASE_URL`
+3. รัน `npm install`
+4. รัน `npm start`
+5. เชิญบอทเข้าเซิร์ฟเวอร์
+6. ในห้องที่อยากใช้เป็น review/log พิมพ์ `!setup-demo`
+7. ในห้องที่อยากโชว์ปุ่ม พิมพ์ `!demo-panel`
 
-## คำสั่ง
+> ถ้าตั้ง `DONATE_REVIEW_CHANNEL_ID` และ `AUDIT_LOG_CHANNEL_ID` ใน env ไว้แล้ว ระบบจะ seed ค่าให้ guild ใหม่อัตโนมัติ
+
+## คำสั่งสำคัญ
 ```bash
 npm install
+npm start
+```
+
+คำสั่งเสริมสำหรับ debug เท่านั้น
+```bash
 npm run db:init
 npm run doctor
-npm start
 ```
 
 ## Flow ที่ได้
@@ -34,10 +44,14 @@ npm start
 5. แอดมินกด Approve / Reject
 6. ระบบอัปเดต DB + ส่ง log
 
+## คำสั่งใน Discord
+- `!setup-demo` → ตั้งห้องปัจจุบันให้เป็น review + audit log ของ demo
+- `!demo-panel` → ส่ง panel ปุ่ม Donate Flow
+
 ## ไอเดียต่อยอดรอบถัดไป
 - เพิ่ม Support Flow
 - เพิ่ม Whitelist Flow
 - เพิ่ม Claim Flow
 - แยก role permission
-- ทำ schema แบบ multi-tenant เต็มรูปแบบ
-- ทำ panel deploy command
+- เพิ่ม setup command แบบเลือก review/log คนละห้อง
+- ทำ dashboard / license / multi-module เต็มรูปแบบ

@@ -3,7 +3,6 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
-const env = require('../../config/env');
 const { CUSTOM_IDS } = require('../../core/customIds');
 const {
   buildDonateRequestEmbed
@@ -16,6 +15,7 @@ const {
   writeAuditLog,
   sendAuditLogToDiscord
 } = require('../../services/audit.service');
+const { ensureDonateFlowReady } = require('../../services/feature-guard.service');
 
 async function handleDonateModal(interaction) {
   const amountRaw = interaction.fields.getTextInputValue('amount').trim();
@@ -27,6 +27,8 @@ async function handleDonateModal(interaction) {
       ephemeral: true
     });
   }
+
+  const config = await ensureDonateFlowReady(interaction.guildId);
 
   const row = await createDonateRequest({
     guildId: interaction.guildId,
@@ -40,7 +42,7 @@ async function handleDonateModal(interaction) {
     note: interaction.fields.getTextInputValue('note').trim()
   });
 
-  const reviewChannel = await interaction.client.channels.fetch(env.DONATE_REVIEW_CHANNEL_ID);
+  const reviewChannel = await interaction.client.channels.fetch(config.DONATE_REVIEW_CHANNEL_ID);
 
   if (!reviewChannel || !reviewChannel.isTextBased()) {
     throw new Error('[CONFIG_INVALID] DONATE_REVIEW_CHANNEL_ID is not a text channel');
@@ -82,9 +84,9 @@ async function handleDonateModal(interaction) {
     }
   });
 
-  await sendAuditLogToDiscord(interaction.client, [
+  await sendAuditLogToDiscord(interaction.client, interaction.guildId, [
     '📝 **DONATE_REQUEST_CREATED**',
-    `Request: \\`${row.request_code}\\``,
+    `Request: \`${row.request_code}\``,
     `User: <@${interaction.user.id}>`,
     `Amount: ${amount.toLocaleString()} บาท`
   ]);

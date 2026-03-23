@@ -1,6 +1,6 @@
-const env = require('../config/env');
 const { query } = require('../db/query');
 const logger = require('../utils/logger');
+const { getTenantConfigMap } = require('../tenants/tenant.service');
 
 async function writeAuditLog({ guildId, actorId, actorName, actionType, targetType, targetId, details }) {
   await query(
@@ -11,13 +11,16 @@ async function writeAuditLog({ guildId, actorId, actorName, actionType, targetTy
   );
 }
 
-async function sendAuditLogToDiscord(client, lines = []) {
+async function sendAuditLogToDiscord(client, guildId, lines = []) {
   try {
-    const channel = await client.channels.fetch(env.AUDIT_LOG_CHANNEL_ID);
+    const config = await getTenantConfigMap(guildId);
+    const channelId = config.AUDIT_LOG_CHANNEL_ID;
+    if (!channelId) return;
+    const channel = await client.channels.fetch(channelId);
     if (!channel || !channel.isTextBased()) return;
     await channel.send(lines.join('\n').slice(0, 1900));
   } catch (error) {
-    logger.warn('Failed to send audit log to Discord', { error: error.message });
+    logger.warn('Failed to send audit log to Discord', { error: error.message, guildId });
   }
 }
 
