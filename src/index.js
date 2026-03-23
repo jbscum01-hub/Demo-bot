@@ -56,9 +56,9 @@ client.on('interactionCreate', async (interaction) => {
         : 'เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่หรือตรวจสอบ config / database';
 
     if (interaction.deferred || interaction.replied) {
-      await interaction.followUp({ content, ephemeral: true }).catch(() => null);
+      await interaction.followUp({ content, flags: 64 }).catch(() => null);
     } else {
-      await interaction.reply({ content, ephemeral: true }).catch(() => null);
+      await interaction.reply({ content, flags: 64 }).catch(() => null);
     }
   }
 });

@@ -34,7 +34,7 @@ async function handleWhitelistReview(interaction, status, requestCode) {
   if (!updated) {
     return interaction.reply({
       content: 'รายการนี้อาจถูกตรวจไปแล้ว หรือไม่พบข้อมูล',
-      ephemeral: true
+      flags: 64
     });
   }
 
