@@ -1,0 +1,59 @@
+const { query } = require('../db/query');
+const { buildRequestCode } = require('../utils/requestCode');
+
+async function createWhitelistRequest(payload) {
+  const requestCode = buildRequestCode('WL');
+
+  const result = await query(
+    `INSERT INTO demo_whitelist_requests (
+      request_code, guild_id, user_id, username, discord_tag, player_name,
+      age, experience_text, reason_text, status
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'PENDING')
+    RETURNING *`,
+    [
+      requestCode,
+      payload.guildId,
+      payload.userId,
+      payload.username,
+      payload.discordTag,
+      payload.playerName,
+      payload.age,
+      payload.experienceText,
+      payload.reasonText
+    ]
+  );
+
+  return result.rows[0];
+}
+
+async function updateWhitelistRequestMessageMeta({ requestCode, channelId, messageId }) {
+  await query(
+    `UPDATE demo_whitelist_requests
+     SET channel_id = $2, message_id = $3
+     WHERE request_code = $1`,
+    [requestCode, channelId, messageId]
+  );
+}
+
+async function reviewWhitelistRequest({ requestCode, status, reviewerId, reviewerName, reviewNote }) {
+  const result = await query(
+    `UPDATE demo_whitelist_requests
+     SET status = $2,
+         reviewer_id = $3,
+         reviewer_name = $4,
+         review_note = $5,
+         reviewed_at = NOW()
+     WHERE request_code = $1
+       AND status = 'PENDING'
+     RETURNING *`,
+    [requestCode, status, reviewerId, reviewerName, reviewNote || null]
+  );
+
+  return result.rows[0] || null;
+}
+
+module.exports = {
+  createWhitelistRequest,
+  updateWhitelistRequestMessageMeta,
+  reviewWhitelistRequest
+};

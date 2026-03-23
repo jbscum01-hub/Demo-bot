@@ -60,4 +60,48 @@ async function handleOpenDonateModal(interaction) {
   await interaction.showModal(modal);
 }
 
-module.exports = { handleOpenDonateModal };
+async function handleOpenWhitelistModal(interaction) {
+  const modal = new ModalBuilder()
+    .setCustomId(CUSTOM_IDS.WHITELIST_MODAL)
+    .setTitle('ส่งใบสมัคร Whitelist (Demo)');
+
+  const playerName = new TextInputBuilder()
+    .setCustomId('player_name')
+    .setLabel('ชื่อตัวละคร / ชื่อในเกม')
+    .setStyle(TextInputStyle.Short)
+    .setRequired(true)
+    .setMaxLength(100);
+
+  const age = new TextInputBuilder()
+    .setCustomId('age')
+    .setLabel('อายุ')
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder('เช่น 21')
+    .setRequired(true)
+    .setMaxLength(3);
+
+  const experience = new TextInputBuilder()
+    .setCustomId('experience_text')
+    .setLabel('ประสบการณ์ RP / เล่นเซิร์ฟ')
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true)
+    .setMaxLength(500);
+
+  const reason = new TextInputBuilder()
+    .setCustomId('reason_text')
+    .setLabel('เหตุผลที่อยากเข้าร่วม')
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true)
+    .setMaxLength(500);
+
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(playerName),
+    new ActionRowBuilder().addComponents(age),
+    new ActionRowBuilder().addComponents(experience),
+    new ActionRowBuilder().addComponents(reason)
+  );
+
+  await interaction.showModal(modal);
+}
+
+module.exports = { handleOpenDonateModal, handleOpenWhitelistModal };

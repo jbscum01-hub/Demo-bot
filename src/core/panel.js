@@ -7,7 +7,11 @@ function buildDemoPanelPayload() {
     new ButtonBuilder()
       .setCustomId(CUSTOM_IDS.OPEN_DONATE_MODAL)
       .setLabel('💰 Donate Flow')
-      .setStyle(ButtonStyle.Primary)
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId(CUSTOM_IDS.OPEN_WHITELIST_MODAL)
+      .setLabel('📋 Whitelist Flow')
+      .setStyle(ButtonStyle.Secondary)
   );
 
   return {

@@ -12,7 +12,7 @@ function buildDemoPanelEmbed() {
       '• กดอนุมัติ / ปฏิเสธ',
       '• เก็บ log ลงฐานข้อมูล',
       '',
-      'ตอนนี้เปิดให้ลอง **Donate Flow** ก่อน'
+      'ตอนนี้เปิดให้ลอง **Donate Flow** และ **Whitelist Flow**'
     ].join('\n'));
 }
 
@@ -46,8 +46,39 @@ function buildReviewedDonateEmbed(row) {
     .setTimestamp(new Date(row.reviewed_at || Date.now()));
 }
 
+function buildWhitelistRequestEmbed(row) {
+  return new EmbedBuilder()
+    .setTitle(`📋 Whitelist Review | ${row.request_code}`)
+    .addFields(
+      { name: 'สถานะ', value: row.status, inline: true },
+      { name: 'ผู้ส่ง', value: `<@${row.user_id}>`, inline: true },
+      { name: 'ชื่อในเกม', value: row.player_name, inline: true },
+      { name: 'อายุ', value: String(row.age), inline: true },
+      { name: 'ประสบการณ์ RP / เล่นเซิร์ฟ', value: row.experience_text || '-', inline: false },
+      { name: 'เหตุผลที่อยากเข้าร่วม', value: row.reason_text || '-', inline: false }
+    )
+    .setFooter({ text: `Discord: ${row.discord_tag || row.username}` })
+    .setTimestamp(new Date(row.created_at || Date.now()));
+}
+
+function buildReviewedWhitelistEmbed(row) {
+  const emoji = row.status === 'APPROVED' ? '✅' : '❌';
+  return new EmbedBuilder()
+    .setTitle(`${emoji} Whitelist ${row.status} | ${row.request_code}`)
+    .addFields(
+      { name: 'ผู้ส่ง', value: `<@${row.user_id}>`, inline: true },
+      { name: 'ชื่อในเกม', value: row.player_name, inline: true },
+      { name: 'อายุ', value: String(row.age), inline: true },
+      { name: 'ผู้ตรวจ', value: row.reviewer_name || `<@${row.reviewer_id}>`, inline: true },
+      { name: 'หมายเหตุผู้ตรวจ', value: row.review_note || '-', inline: false }
+    )
+    .setTimestamp(new Date(row.reviewed_at || Date.now()));
+}
+
 module.exports = {
   buildDemoPanelEmbed,
   buildDonateRequestEmbed,
-  buildReviewedDonateEmbed
+  buildReviewedDonateEmbed,
+  buildWhitelistRequestEmbed,
+  buildReviewedWhitelistEmbed
 };

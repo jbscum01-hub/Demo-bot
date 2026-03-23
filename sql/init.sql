@@ -61,6 +61,33 @@ CREATE INDEX IF NOT EXISTS idx_demo_donate_requests_status
 CREATE INDEX IF NOT EXISTS idx_demo_donate_requests_user_id
   ON demo_donate_requests(user_id);
 
+CREATE TABLE IF NOT EXISTS demo_whitelist_requests (
+  id BIGSERIAL PRIMARY KEY,
+  request_code TEXT NOT NULL UNIQUE,
+  guild_id TEXT NOT NULL,
+  channel_id TEXT,
+  message_id TEXT,
+  user_id TEXT NOT NULL,
+  username TEXT NOT NULL,
+  discord_tag TEXT,
+  player_name TEXT NOT NULL,
+  age INTEGER NOT NULL,
+  experience_text TEXT,
+  reason_text TEXT,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  reviewer_id TEXT,
+  reviewer_name TEXT,
+  review_note TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_demo_whitelist_requests_status
+  ON demo_whitelist_requests(status);
+
+CREATE INDEX IF NOT EXISTS idx_demo_whitelist_requests_user_id
+  ON demo_whitelist_requests(user_id);
+
 CREATE TABLE IF NOT EXISTS audit_logs (
   id BIGSERIAL PRIMARY KEY,
   guild_id TEXT NOT NULL,

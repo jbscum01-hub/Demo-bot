@@ -4,7 +4,9 @@ const logger = require('../utils/logger');
 
 const CONFIG_KEYS = {
   DONATE_REVIEW_CHANNEL_ID: 'DONATE_REVIEW_CHANNEL_ID',
-  AUDIT_LOG_CHANNEL_ID: 'AUDIT_LOG_CHANNEL_ID'
+  WHITELIST_REVIEW_CHANNEL_ID: 'WHITELIST_REVIEW_CHANNEL_ID',
+  AUDIT_LOG_CHANNEL_ID: 'AUDIT_LOG_CHANNEL_ID',
+  DEMO_PANEL_CHANNEL_ID: 'DEMO_PANEL_CHANNEL_ID'
 };
 
 async function ensureTenant(guild) {
@@ -12,9 +14,7 @@ async function ensureTenant(guild) {
     `INSERT INTO tenants (guild_id, guild_name, language, timezone)
      VALUES ($1, $2, $3, $4)
      ON CONFLICT (guild_id)
-     DO UPDATE SET
-       guild_name = EXCLUDED.guild_name,
-       updated_at = NOW()`,
+     DO UPDATE SET guild_name = EXCLUDED.guild_name, updated_at = NOW()`,
     [guild.id, guild.name, env.DEFAULT_LANGUAGE, env.DEFAULT_TIMEZONE]
   );
 
@@ -44,7 +44,9 @@ async function seedTenantModules(tenantId) {
 async function seedTenantConfig(tenantId) {
   const defaults = {
     [CONFIG_KEYS.DONATE_REVIEW_CHANNEL_ID]: env.DONATE_REVIEW_CHANNEL_ID || null,
-    [CONFIG_KEYS.AUDIT_LOG_CHANNEL_ID]: env.AUDIT_LOG_CHANNEL_ID || null
+    [CONFIG_KEYS.WHITELIST_REVIEW_CHANNEL_ID]: env.WHITELIST_REVIEW_CHANNEL_ID || null,
+    [CONFIG_KEYS.AUDIT_LOG_CHANNEL_ID]: env.AUDIT_LOG_CHANNEL_ID || null,
+    [CONFIG_KEYS.DEMO_PANEL_CHANNEL_ID]: env.DEMO_PANEL_CHANNEL_ID || null
   };
 
   for (const [configKey, configValue] of Object.entries(defaults)) {
@@ -92,7 +94,9 @@ async function syncAllGuilds(client) {
     const missing = [];
 
     if (!config[CONFIG_KEYS.DONATE_REVIEW_CHANNEL_ID]) missing.push(CONFIG_KEYS.DONATE_REVIEW_CHANNEL_ID);
+    if (!config[CONFIG_KEYS.WHITELIST_REVIEW_CHANNEL_ID]) missing.push(CONFIG_KEYS.WHITELIST_REVIEW_CHANNEL_ID);
     if (!config[CONFIG_KEYS.AUDIT_LOG_CHANNEL_ID]) missing.push(CONFIG_KEYS.AUDIT_LOG_CHANNEL_ID);
+    if (!config[CONFIG_KEYS.DEMO_PANEL_CHANNEL_ID]) missing.push(CONFIG_KEYS.DEMO_PANEL_CHANNEL_ID);
 
     logger.info('Tenant synced', {
       guild_id: guild.id,
